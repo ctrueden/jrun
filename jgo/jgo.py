@@ -233,7 +233,7 @@ def find_endpoint(argv, shortcuts={}):
     pattern = re.compile('.*https?://.*')
     indices = []
     for index, arg in enumerate(argv):
-        if arg in shortcuts or (Endpoint.is_endpoint(arg) and not pattern.match(arg)):
+        if any(a in shortcuts for a in arg.split('+')) or (Endpoint.is_endpoint(arg) and not pattern.match(arg)):
             indices.append(index)
     return -1 if len(indices) == 0 else indices[-1]
 
@@ -369,6 +369,7 @@ def split_endpoint_string(endpoint_string):
     return endpoint_strings
 
 def endpoints_from_strings(endpoint_strings, shortcuts={}):
+    _logger.debug('Creating endpoints from strings %s with shortcuts %s', endpoint_strings, shortcuts)
     return [Endpoint.parse_endpoint(expand_coordinate(ep, shortcuts=shortcuts)) for ep in endpoint_strings]
 
 def coordinates_from_endpoints(endpoints):
